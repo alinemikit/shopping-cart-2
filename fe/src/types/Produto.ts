@@ -3,6 +3,6 @@ export interface Produto {
 	prod_name: string;
 	prod_desc: string;
 	prod_val: number;
-	menu_id: string;
-	emp_id: string;
+  prod_image: string;
+	cat_id: string;
 }

@@ -1,28 +1,32 @@
 import React from 'react';
-import { Header } from './Components/Header';
 import { GlobalStyles } from './styles/GlobalStyles';
 import { Router } from './Router';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { api } from './utils/api';
-import { Empresa } from './types/Empresa';
-import { Dashboard } from './Components/Dashboard';
+import { Produto } from './types/Produto';
+import { Order } from './types/Order';
+import { ProdCateg } from './types/ProdCateg';
 
 
 export function App() {
 
-  const [empresas, setEmpresas] = useState<Empresa[]>([]);
-  const [listEmpresas, setListEmpresas] = useState<Empresa[]>([]);
+  const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [listProdutos, setListProdutos] = useState<Produto[]>([]);
+  const [prodCateg, setProdCateg] = useState<ProdCateg[]>([]);
   const [search, setSearch] = useState('');
+  const [orders, setListOrders] = useState<Order[]>([]);
 
   useEffect(() => {
-    api.get('/empresa').then(({ data }) => {
+    api.get('/produto').then(({ data }) => {
       // console.log(data);
-      setEmpresas(data);
-      setListEmpresas(data);
+      setProdutos(data);
+      setListProdutos(data);
     });
 
-
-
+    api.get('/itemProdCat').then(({ data }) => {
+      // console.log(data);
+      setProdCateg(data);
+    });
   }, []);
 
   function searchOnChange(event: any) {
@@ -31,36 +35,56 @@ export function App() {
 
     if (filter === '') {
       // console.log('filter vazio');
-      setListEmpresas(empresas);
+      setListProdutos(produtos);
     }
     else {
-      const searchResult = empresas.filter((row) => row.emp_name.toString().toLowerCase().includes(filter));
-      setListEmpresas(searchResult);
+      const searchResult = produtos.filter((row) => row.prod_name.toString().toLowerCase().includes(filter));
+      setListProdutos(searchResult);
       // console.log(searchResult);
     }
+  }
+
+  function addToOrder(produto: Produto, quantidade: number) {
+    setListOrders((prevState) => {
+      const itemIndex = prevState.findIndex(
+        orders => orders.produto.prod_id === produto.prod_id
+      );
+
+      console.log(itemIndex);
+
+      if (itemIndex < 0) {
+        return prevState.concat({
+          produto: produto,
+          quantidade: quantidade
+        });
+      }
+
+      const newOrders = [...prevState];
+      const item = newOrders[itemIndex];
+      newOrders[itemIndex] = {
+        ...item,
+        quantidade: newOrders[itemIndex].quantidade + quantidade
+      };
+      return newOrders;
+    });
+
   }
 
   return (
     <React.Fragment>
       <GlobalStyles />
-      <Header
+      <Router
         search={search}
         setSearch={setSearch}
         searchOnChange={searchOnChange}
+        produtos={produtos}
+        listProdutos={listProdutos}
+        setListProdutos={setListProdutos}
+        orders={orders}
+        setListOrders={setListOrders}
+        onAdd={addToOrder}
+        prodCateg={prodCateg}
       />
-      <Dashboard
-        empresas={empresas}
-        listEmpresas={listEmpresas}
-        setListEmpresas={setListEmpresas}
-      />
-      {/* <Router
-        search={search}
-        setSearch={setSearch}
-        searchOnChange={searchOnChange}
-        empresas={empresas}
-        listEmpresas={listEmpresas}
-        setListEmpresas={setListEmpresas}
-      /> */}
     </React.Fragment>
   );
 }

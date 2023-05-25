@@ -3,6 +3,7 @@ import Categoria from '../models/Categoria';
 import CategoriaRepository from '../repositories/CategoriaRepository';
 import ItemEmpresaCategoriaRepository from '../repositories/ItemEmpresaCategoriaRepository';
 import ItemEmpresaCategoriaController from './ItemEmpresaCategoriaController';
+import ItemProdutoCategoriaRepository from '../repositories/ItemProdutoCategoriaRepository';
 
 class CategoriaController {
   async index(request: Request, response: Response) {
@@ -72,9 +73,9 @@ class CategoriaController {
       } = request.body;
       const imagePath = request.file?.filename;
 
-      if (!cat_name) {
-        return response.status(400).json({ error: 'Category Name is required' });
-      }
+      // if (!cat_name) {
+      //   return response.status(400).json({ error: 'Category Name is required' });
+      // }
 
       const categoria = await CategoriaRepository.update(
         new Categoria(id, cat_name, imagePath)
@@ -99,14 +100,26 @@ class CategoriaController {
     try {
       const { id } = request.params;
 
-      const empresaExists = await ItemEmpresaCategoriaRepository.findByCategoria(id);
+    //   const empresaExists = await ItemEmpresaCategoriaRepository.findByCategoria(id);
 
-      if (Object.keys(empresaExists).length) {
-        response.status(400).send('Há empresas cadastradas nessa categoria, não pode ser deletada!');
-      } else {
-        await CategoriaRepository.delete(id);
-        response.sendStatus(204);
+    //   if (Object.keys(empresaExists).length) {
+    //     response.status(400).send('Há empresas cadastradas nessa categoria, não pode ser deletada!');
+    //   } else {
+    //     await CategoriaRepository.delete(id);
+    //     response.sendStatus(204);
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    //   response.sendStatus(500);
+    // }
+
+    const exist = await ItemProdutoCategoriaRepository.findByCat(id);
+      if (Object.keys(exist).length){
+        await ItemProdutoCategoriaRepository.deleteByCategory(id);
       }
+
+      await CategoriaRepository.delete(id);
+      response.sendStatus(204);
     } catch (error) {
       console.log(error);
       response.sendStatus(500);

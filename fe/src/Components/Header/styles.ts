@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { Search } from '@styled-icons/material/Search';
-import { ShoppingBag } from '@styled-icons/material/ShoppingBag';
+import { FaShoppingBag } from 'react-icons/fa';
 import { Person } from '@styled-icons/material/Person';
 
 
@@ -9,7 +9,9 @@ export const Container = styled.header`
   display: flex;
   justify-content: center;
   height: 100px;
-  align-items: center;
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 0;
 `;
 
 export const Content = styled.div`
@@ -68,10 +70,33 @@ export const Buttons = styled.div`
   max-width: 80px;
   display: flex;
   justify-content: space-between;
+
 `;
 
-export const ShoppingBagButton = styled(ShoppingBag)`
-  font-size: 50px;
+export const ShoppingBagButton = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  color: rgb(51, 51, 51);
+  background: transparent;
+
+  .badge {
+    padding-left: 9px;
+    padding-right: 9px;
+    -webkit-border-radius: 9px;
+    -moz-border-radius: 9px;
+    border-radius: 9px;
+  }
+
+  #lblCartCount {
+      font-size: 12px;
+      background: #ff0000;
+      color: #fff;
+      padding: 0 5px;
+      vertical-align: top;
+      margin-left: -10px;
+  }
 `;
 
 export const UserButton = styled(Person)`

@@ -1,7 +1,5 @@
 import styled from 'styled-components';
 
-
-
 export const Container = styled.div`
   width: 100%;
   max-width: 90%;
@@ -28,7 +26,7 @@ export const Subcontainer = styled.div`
   }
 
   button:hover {
-    background: #FFDEAD;
+    background: #FFF2E0;
   }
 `;
 
@@ -40,14 +38,14 @@ export const BoardCategoria = styled.div`
   overflow-y: hidden;
   overflow: hidden;
   white-space: nowrap;
-  /* display: flex;
-  justify-content: center; */
+  display: flex;
+  justify-content: center;
 
   button {
-    background: #FFDEAD;
+    background: #FFF2E0;
     border: none;
-    border-radius: 8px;
-    width: 120px;
+    border-radius: 45px;
+    width: 100px;
     padding: 16px;
     margin: 5px;
   }
@@ -61,26 +59,24 @@ export const BoardProduto = styled.div`
   margin: 10px;
   background: transparent;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   grid-gap: 15px;
   justify-content: center;
 
-
   button {
-    background: #f6f7f9;
+    background: #fff;
     border: none;
+    /* background: #f6f7f9; */
     border-radius: 16px;
     margin: 5px;
-    box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
-    /* transition: 1s ease; */
+    /* box-shadow: 0 3px 10px rgb(0 0 0 / 0.2); */
   }
 
-  /* button:hover{
-    -webkit-transform: scale(1.1);
-    -ms-transform: scale(1.1);
-    transform: scale(1.1);
-    transition: 1s ease;
-  } */
+  button:hover{
+    filter:alpha(opacity=70);
+    opacity:0.7;
+  }
 
 `;
+
 

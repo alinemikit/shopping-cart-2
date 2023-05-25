@@ -24,31 +24,31 @@ class ProdutoRepository {
     return row;
   }
 
-  async findByMenu(cat_id: string) {
-    const sql = 'SELECT * FROM Produto WHERE menu_id = ?';
-    const values = [cat_id];
+  // async findByMenu(cat_id: string) {
+  //   const sql = 'SELECT * FROM Produto WHERE menu_id = ?';
+  //   const values = [cat_id];
 
-    const row = await execQuery(sql, values);
-    return row;
-  }
+  //   const row = await execQuery(sql, values);
+  //   return row;
+  // }
 
-  async findByEmpresa(emp_id: string) {
-    const sql = 'SELECT * FROM Produto WHERE emp_id = ?';
-    const values = [emp_id];
+  // async findByEmpresa(emp_id: string) {
+  //   const sql = 'SELECT * FROM Produto WHERE emp_id = ?';
+  //   const values = [emp_id];
 
-    const row = await execQuery(sql, values);
-    return row;
-  }
+  //   const row = await execQuery(sql, values);
+  //   return row;
+  // }
 
   async create(produto: Produto) {
     const now = new Date();
     const id = now.valueOf();
     const sql = `INSERT INTO
                 Produto(prod_id , prod_name, prod_desc, prod_val, menu_id,
-                  prod_image, emp_id)
-                VALUES(${id}, ?, ?, ?, ?, ?, ?)`;
-    const values = [produto.name, produto.descricao, produto.valor,
-      produto.menu_id, produto.image, produto.emp_id];
+                  prod_image, emp_id, cat_id)
+                VALUES(${id}, ?, ?, ?, ?, ?, ?, ?)`;
+    const values = [produto.name, produto.descricao, produto.valor, null,
+      produto.image, null, produto.cat_id];
 
     const row = await execQuery(sql, values);
     console.log(row);
@@ -59,10 +59,10 @@ class ProdutoRepository {
     const now = new Date();
     const sql = `UPDATE Produto
                 SET prod_name = ?, prod_desc = ?, prod_val = ?, menu_id = ?,
-                  prod_image = ?, emp_id = ?
+                  prod_image = ?, emp_id = ?, cat_id = ?
                 WHERE prod_id = ?`;
-    const values = [produto.name, produto.descricao, produto.valor,
-      produto.menu_id, produto.image, produto.emp_id, produto.id];
+    const values = [produto.name, produto.descricao, produto.valor, null,
+      produto.image, null, produto.cat_id, produto.id];
 
     const row = await execQuery(sql, values);
     return row;

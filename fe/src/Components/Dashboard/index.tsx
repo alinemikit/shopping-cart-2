@@ -1,120 +1,85 @@
 import { ItemCategoria } from '../ItemCategoria';
-import { ItemEmpresa } from '../ItemEmpresa';
-import { BoardCategoria, BoardProduto, Container, Subcontainer } from './styles';
-import { useEffect, useState, useRef, Dispatch, SetStateAction } from 'react';
+import { BoardCategoria, BoardProduto, Container } from './styles';
+import { useEffect, useState, Dispatch, SetStateAction, useRef } from 'react';
 import { api, baseURL } from '../../utils/api';
 import { Categoria } from '../../types/Categoria';
-import { Empresa } from '../../types/Empresa';
-import React from 'react';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
-import { EmpresaModal } from '../EmpresaModal';
-import { Menu } from '../../types/Menu';
 import { Produto } from '../../types/Produto';
-import { useNavigate } from 'react-router-dom';
+import { ItemProduto } from '../ItemProduto';
+import { ProdutoModal } from '../ProdutoModal';
+import { OrderModal } from '../OrderModal';
+import { Order } from '../../types/Order';
+import { ProdCateg } from '../../types/ProdCateg';
 
 interface DashboardProps {
-  empresas: Empresa[];
-  listEmpresas: Empresa[];
-  setListEmpresas: Dispatch<SetStateAction<Empresa[]>>
+  produtos: Produto[];
+  listProdutos: Produto[];
+  setListProdutos: Dispatch<SetStateAction<Produto[]>>
+  orders: Order[];
+  setListOrders: Dispatch<SetStateAction<Order[]>>
+  onAdd: (produto: Produto, quantidade: number) => void;
+  prodCateg: ProdCateg[];
 }
 
-export function Dashboard({ empresas, listEmpresas, setListEmpresas }: DashboardProps) {
+export function Dashboard({ produtos, listProdutos, setListProdutos, orders,
+  setListOrders, onAdd, prodCateg }: DashboardProps) {
 
   //cria um array de Categorias inicializado como vazio
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [selectedCategoria, setSelectedCategoria] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedEmpresa, setSelectedEmpresa] = useState<null | Empresa>(null);
-  const [menuItems, setMenuItems] = useState<Menu[]>([]);
-  const [produtos, setProdutos] = useState<Produto[]>([]);
-  // const navigate = useNavigate();
+  const [selectedProduto, setSelectedProduto] = useState<null | Produto>(null);
 
   useEffect(() => {
     api.get('/categoria').then(({ data }) => {
       setCategorias(data);
     });
+
   }, []);
 
   async function handleSelectCategoria(categoriaId: string) {
     const categoria = selectedCategoria === categoriaId ? '' : categoriaId;
-    const { data } = await api.get(`/itemEmpCat/${categoriaId}`);
+    const { data } = await api.get(`/itemProdCat/${categoriaId}`);
+    // const selectedCategoriaItems = produtos.filter((row) => row.cat_id.toString().includes(categoriaId));
     if (categoria == '') {
       selectAll();
     } else {
-      setListEmpresas(data);
+      setListProdutos(data);
       setSelectedCategoria(categoria);
     }
   }
 
   async function selectAll() {
     // const { data } = await api.get('/empresa');
-    setListEmpresas(empresas);
+    // const { data } = await api.get('/produto');
+    setListProdutos(produtos);
     setSelectedCategoria('');
   }
 
-  //button erro?
-  const listRef = useRef<Button>(null);
-  const handleScrollRight = () => {
-    listRef.current?.lastElementChild?.scrollIntoView({ behavior: 'smooth' });
-  };
+  function handleOpenModal(produto: Produto) {
 
-  const handleScrollLeft = () => {
-    listRef.current?.firstElementChild?.scrollIntoView({ behavior: 'smooth' });
-  };
+    if (produto) {
+      setIsModalVisible(true);
+      setSelectedProduto(produto);
+    }
+  }
 
-  function handleOpenModal(empresa: Empresa) {
-    //menu by empresa
-    api.get('/menuemp/' + empresa.emp_id).then(({ data }) => {
-      // console.log('menu: ', data);
-      setMenuItems(data);
-    }).catch((error) => {
-      if (error.response.status == 404) {
-        console.log(error.response.data);
-      }
-    });
-
-    //produtos by empresa
-    api.get('/prodemp/' + empresa.emp_id).then(({ data }) => {
-      // console.log('menu: ', data);
-      setProdutos(data);
-    }).catch((error) => {
-      if (error.response.status == 404) {
-        console.log(error.response.data);
-      }
-    });
-
-    setIsModalVisible(true);
-    setSelectedEmpresa(empresa);
-
-    // navigate('/empresa', {
-    //   state: {
-    //     visible: true,
-    //     empresa: empresa,
-    //     menuItems: menuItems,
-    //     produtos: produtos
-    //   }
-    // });
-
+  function handleCloseModal() {
+    setIsModalVisible(false);
+    setSelectedProduto(null);
   }
 
   return (
     <Container>
-      <EmpresaModal
+      <ProdutoModal
         visible={isModalVisible}
-        empresa={selectedEmpresa}
-        menuItems={menuItems}
-        produtos={produtos}
+        produto={selectedProduto}
+        onClose={handleCloseModal}
+        orders={orders}
+        setListOrders={setListOrders}
+        onAdd={onAdd}
       />
-      <Subcontainer>
-        <h2>Category</h2>
-        <div style={{ display: 'flex' }}>
-          <button onClick={handleScrollLeft} ><FaArrowLeft color='#fff' /></button>
-          <button onClick={handleScrollRight} ><FaArrowRight color='#fff' /></button>
-        </div>
-      </Subcontainer>
 
-
-      <BoardCategoria ref={listRef}>
+      <BoardCategoria>
 
         <button onClick={() => { selectAll(); }}>
           <ItemCategoria
@@ -131,7 +96,7 @@ export function Dashboard({ empresas, listEmpresas, setListEmpresas }: Dashboard
               id="item"
               type='button'
               key={categoria.cat_id}
-              style={isSelected ? { background: '#ff9f3e' } : { background: '#FFDEAD' }}
+              style={isSelected ? { background: '#ff9f3e' } : { background: '#FFF2E0' }}
               onClick={() => { handleSelectCategoria(categoria.cat_id); }}>
 
               <ItemCategoria
@@ -144,17 +109,14 @@ export function Dashboard({ empresas, listEmpresas, setListEmpresas }: Dashboard
         })}
       </BoardCategoria>
 
-      <h2>Restaurants</h2>
       <div>
         <BoardProduto>
-          {listEmpresas.length > 0 ? (
-            listEmpresas.map((empresa) => {
+          {listProdutos.length > 0 ? (
+            listProdutos.map((produto) => {
               return (
-                <button type='button' key={empresa.emp_id} onClick={() => handleOpenModal(empresa)}>
-                  <ItemEmpresa
-                    image={baseURL + `uploads/${empresa.emp_image}`}
-                    name={empresa.emp_name}
-                    desc={empresa.emp_desc}
+                <button type='button' key={produto.prod_id} onClick={() => handleOpenModal(produto)}>
+                  <ItemProduto
+                    produto={produto}
                     type={1}
                   />
                 </button>
@@ -162,10 +124,8 @@ export function Dashboard({ empresas, listEmpresas, setListEmpresas }: Dashboard
             })
 
           ) : (
-            <ItemEmpresa
-              image={'/shop.png'}
-              name={'No results found'}
-              desc={''}
+            <ItemProduto
+              produto={null}
               type={0}
             />
           )}

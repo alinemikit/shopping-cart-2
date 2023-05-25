@@ -1,40 +1,46 @@
-import React from 'react';
 import { Route, BrowserRouter, Routes } from 'react-router-dom';
 
 import { Home } from '../src/Pages/Home';
-import { Dashboard } from './Components/Dashboard';
-import { Empresa } from './types/Empresa';
 import { Dispatch, SetStateAction } from 'react';
-import { EmpresaModal } from './Components/EmpresaModal';
-import { PageEmpresa } from '../src/Pages/PageEmpresa';
+import { Produto } from './types/Produto';
+import { Order } from './types/Order';
+import { ProdCateg } from './types/ProdCateg';
 
 interface RouterProps {
   search: string;
   setSearch: Dispatch<SetStateAction<string>>;
   searchOnChange: (event: any) => void;
-  empresas: Empresa[];
-  listEmpresas: Empresa[];
-  setListEmpresas: Dispatch<SetStateAction<Empresa[]>>
+  produtos: Produto[];
+  listProdutos: Produto[];
+  setListProdutos: Dispatch<SetStateAction<Produto[]>>
+  orders: Order[];
+  setListOrders: Dispatch<SetStateAction<Order[]>>
+  onAdd: (produto: Produto, quantidade: number) => void;
+  prodCateg: ProdCateg[];
 }
 
 
-export function Router({ search, setSearch, searchOnChange, empresas, listEmpresas, setListEmpresas }: RouterProps) {
+export function Router({ search, setSearch, searchOnChange, produtos, listProdutos,
+  setListProdutos, orders, setListOrders, onAdd, prodCateg }: RouterProps) {
   // console.log(empresas);
   return (
     <BrowserRouter>
       <Routes>
-        {/* <Route element={
+        <Route element={
           <Home
             search={search}
             setSearch={setSearch}
             searchOnChange={searchOnChange}
-            empresas={empresas}
-            listEmpresas={listEmpresas}
-            setListEmpresas={setListEmpresas}
+            produtos={produtos}
+            listProdutos={listProdutos}
+            setListProdutos={setListProdutos}
+            orders={orders}
+            setListOrders={setListOrders}
+            onAdd={onAdd}
+            prodCateg={prodCateg}
           />} path='/'
-        /> */}
+        />
 
-        <Route element={<PageEmpresa/>} path='/empresa'/>
       </Routes>
     </BrowserRouter>
   );
